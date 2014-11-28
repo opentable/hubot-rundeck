@@ -1,0 +1,29 @@
+{
+  "name": "hubot-rundeck",
+  "description": "A Hubot script for interacting with Rundeck for the orchestration and querying of jobs",
+  "version": "0.1.0",
+  "author": "Liam Bennett <lbennett@opentable.com>",
+  "license": "MIT",
+  "keywords": "hubot, hubot-scripts, rundeck",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/opentable/hubot-rundeck.git"
+  },
+  "bugs": {
+    "url": "https://github.com/opentable/hubot-rundeck/issues"
+  },
+  "dependencies": {
+    "underscore": "^1.6.0",
+    "strftime": "^0.8.0",
+    "xml2js": "^0.4.1"
+  },
+  "peerDependencies": {
+    "hubot": "2.x"
+  },
+  "devDependencies": {
+    "hubot": "2.x"
+  },
+  "main": "index.coffee",
+  "scripts": {
+  }
+}

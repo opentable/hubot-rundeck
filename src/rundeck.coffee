@@ -7,10 +7,10 @@
 #   "xml2js": "^0.4.1"
 #
 # Commands:
-#   hubot rundeck list projects in [environment]                     - Gets a list of the projects for the given server alias
-#   hubut rundeck list jobs in [project] in [environment]            - Gets a list of all the jobs in the given project for the given server alias
-#   hubot rundeck run [job] in [project] on [environment]            - Triggers the given job for the given project
-#   hubot rundeck show status of [job] in [project] on [environment] - Shows the current status for the latest execution of the given job
+#   hubot rundeck projects [alias]                                   - Gets a list of the projects for the given server alias
+#   hubut rundeck jobs '[project]' [alias]                           - Gets a list of all the jobs in the given project for the given server alias
+#   hubot rundeck trigger '[job]' '[project]' [alias] [args]         - Triggers the given job for the given project
+#   hubot rundeck status '[job]' '[project]' [alias]                 - Shows the current status for the latest execution of the given job
 #   hubot rundeck show aliases                                       - shows the aliases for the list of rundeck instances
 #   hubot rundeck add alias [alias name] [url] [authToken]           - sets the alias for a given url and authentication token
 #   hubot rundeck clear alias [alias name]                           - removed the given alias
@@ -31,7 +31,7 @@ class Rundeck
   constructor: (@robot, @url, @authToken) ->
     @logger = @robot.logger
 
-    @baseUrl = "http://#{@url}/api/11"
+    @baseUrl = "http://#{@url}/api/12"
 
     @headers =
       "Accept": "application/xml"
@@ -105,11 +105,13 @@ class Jobs
       else
         cb false
 
-  run: (name, query, cb) ->
+  run: (name, args, cb) ->
     @find name, (job) =>
       if job
         uri = "job/#{job.id}/run"
-        uri += query if query?
+        if args?
+          uri += "?argString=#{args}"
+
         @rundeck.get uri, (results) ->
           cb job, results
       else
@@ -125,7 +127,6 @@ class Job
 
   formatList: ->
     "#{@name} - #{@description}"
-
 
 class Executions
   constructor: (@rundeck, @job) ->
@@ -148,8 +149,6 @@ class Execution
 
   formatList: ->
     "#{@id} - #{@status} - #{@href}"
-
-
 
 module.exports = (robot) ->
   logger = robot.logger
@@ -175,9 +174,8 @@ module.exports = (robot) ->
     robot.brain.data.rundeck_aliases = _rundeckAliases
     msg.send("The rundeck system alias #{alias} for #{url} has been added to the brain")
 
-
-
-  robot.respond /rundeck list projects in (.*)/i, (msg) ->
+  #hubot rundeck projects myrundeck-alias
+  robot.respond /rundeck projects (.*)/i, (msg) ->
     if msg.message.user.id is robot.name
       return
 
@@ -197,7 +195,8 @@ module.exports = (robot) ->
         else
           msg.send "No rundeck projects found."
 
-  robot.respond /rundeck list jobs in (.*) in (.*)/i, (msg) ->
+  #hubot rundeck 'MyProject' jobs myrundeck-alias
+  robot.respond /rundeck '(.*)' jobs (.*)/i, (msg) ->
     if msg.message.user.id is robot.name
       return
 
@@ -218,12 +217,14 @@ module.exports = (robot) ->
         else
           msg.send "No jobs found for rundeck #{project}"
 
-  robot.respond /rundeck run (.*) in (.*) on (.*)/i, (msg) ->
+  #hubot rundeck trigger 'my-job' 'MyProject' myrundeck-alias args:<optional args>
+  robot.respond /rundeck trigger '(.*)'\s'(.*)'\s([\w]+)(?: args:)?(.*)/i, (msg) ->
     if msg.message.user.id is robot.name
       return
 
     name = msg.match[1]
     project = msg.match[2]
+    args = msg.match[4]
 
     alias =  msg.match[3]
     url = _rundeckAliases[alias]['url']
@@ -233,13 +234,13 @@ module.exports = (robot) ->
       msg.send "Do not recognise rundeck system alias #{alias}"
     else
       rundeck = new Rundeck(robot, url, token)
-      rundeck.jobs(project).run name, null, (job, results) ->
+      rundeck.jobs(project).run name, args, (job, results) ->
         if job
           msg.send "Running job #{name}: #{results.result.executions[0].execution[0]['$'].href}"
         else
           msg.send "Could not execute rundeck job \"#{name}\"."
 
-  robot.respond /rundeck show status of (.*) in (.*) on (.*)/i, (msg) ->
+  robot.respond /rundeck status '(.*)' '(.*)' '(.*)'/i, (msg) ->
     if msg.message.user.id is robot.name
       return
 

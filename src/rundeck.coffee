@@ -7,15 +7,14 @@
 #   "xml2js": "^0.4.1"
 #
 # Commands:
-#   hubot rundeck projects [alias]                                   - Gets a list of the projects for the given server alias
-#   hubut rundeck jobs '[project]' [alias]                           - Gets a list of all the jobs in the given project for the given server alias
-#   hubot rundeck trigger '[job]' '[project]' [alias] [args]         - Triggers the given job for the given project
-#   hubot rundeck status '[job]' '[project]' [alias]                 - Shows the current status for the latest execution of the given job
-#   hubot rundeck show aliases                                       - shows the aliases for the list of rundeck instances
-#   hubot rundeck add alias [alias name] [url] [authToken]           - sets the alias for a given url and authentication token
-#   hubot rundeck clear alias [alias name]                           - removed the given alias
-#
-#rundeck show status of (.*) (?:in|for) (.*) (?:in|for) (.*)
+#   hubot rundeck projects [alias]                                    - Gets a list of the projects for the given server alias
+#   hubot rundeck jobs '[project]' [alias]                            - Gets a list of all the jobs in the given project for the given server alias
+#   hubot rundeck trigger '[job]' '[project]' [alias] [args]          - Triggers the given job for the given project
+#   hubot rundeck status '[job]' '[project]' [alias]                  - Shows the current status for the latest execution of the given job
+#   hubot rundeck show aliases                                        - shows the aliases for the list of rundeck instances
+#   hubot rundeck add alias [alias name] [url] [authToken]            - sets the alias for a given url and authentication token
+#   hubot rundeck clear alias [alias name]                            - remove the given alias
+#    
 # Notes:
 #   The server must be a fqdn (with the port!) to get to rundeck
 #

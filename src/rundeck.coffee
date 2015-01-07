@@ -31,7 +31,7 @@ class Rundeck
   constructor: (@robot, @url, @authToken) ->
     @logger = @robot.logger
 
-    @baseUrl = "http://#{@url}/api/12"
+    @baseUrl = "#{@url}/api/12"
 
     @headers =
       "Accept": "application/xml"

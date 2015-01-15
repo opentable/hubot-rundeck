@@ -22,6 +22,8 @@
 # Author:
 #  Liam Bennett
 
+rundeck_polling_interval = process.env.HUBOT_RUNDECK_POLLING_INTERVAL or 5000
+
 _ = require('underscore')
 sys = require 'sys' # Used for debugging
 Parser = require('xml2js').Parser
@@ -46,6 +48,9 @@ class Rundeck
   jobs: (project) -> new Jobs(@, project)
   projects: -> new Projects(@)
   executions: (job) -> new Executions(@, job)
+  execution: (execution_id, cb) -> 
+    @get "execution/#{execution_id}", (results) ->
+      cb new Execution(results.executions.execution[0])
 
   getOutput: (url, cb) ->
     @robot.http("#{@baseUrl}/#{url}").headers(@plainTextHeaders).get() (err, res, body) =>
@@ -236,7 +241,18 @@ module.exports = (robot) ->
       rundeck = new Rundeck(robot, url, token)
       rundeck.jobs(project).run name, args, (job, results) ->
         if job
-          msg.send "Running job #{name}: #{results.result.executions[0].execution[0]['$'].href}"
+          job_id = results.executions.execution[0]['$'].id
+          msg.send "Running job #{name} as ##{job_id}: #{results.executions.execution[0]['$'].href}"
+          status = results.executions.execution[0].status
+          interval_id = setInterval () ->
+            rundeck.execution job_id, (execution) ->
+              new_status = execution.status
+              if new_status != status
+                status = new_status
+                msg.send "Status updated for job ##{job_id}: #{status}"
+              if status != 'running' 
+                clearInterval interval_id
+          , rundeck_polling_interval 
         else
           msg.send "Could not execute rundeck job \"#{name}\"."
 

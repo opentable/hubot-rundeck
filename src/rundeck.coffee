@@ -59,6 +59,7 @@ class Rundeck
     parser = new Parser()
 
     @robot.http("#{@baseUrl}/#{url}").headers(@headers).get() (err, res, body) =>
+      console.log "#{@baseUrl}/#{url}"
       if err?
         @logger.error JSON.stringify(err)
       else
@@ -236,7 +237,7 @@ module.exports = (robot) ->
       rundeck = new Rundeck(robot, url, token)
       rundeck.jobs(project).run name, args, (job, results) ->
         if job
-          msg.send "Running job #{name}: #{results.result.executions[0].execution[0]['$'].href}"
+          msg.send "Successfully triggered a run for the job: #{name}"
         else
           msg.send "Could not execute rundeck job \"#{name}\"."
 

@@ -8,7 +8,7 @@
 #
 # Commands:
 #   hubot rundeck projects [alias]                                   - Gets a list of the projects for the given server alias
-#   hubut rundeck jobs '[project]' [alias]                           - Gets a list of all the jobs in the given project for the given server alias
+#   hubut rundeck '[project]' jobs [alias]                           - Gets a list of all the jobs in the given project for the given server alias
 #   hubot rundeck trigger '[job]' '[project]' [alias] [args]         - Triggers the given job for the given project
 #   hubot rundeck status '[job]' '[project]' [alias]                 - Shows the current status for the latest execution of the given job
 #   hubot rundeck show aliases                                       - shows the aliases for the list of rundeck instances
